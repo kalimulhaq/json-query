@@ -1,0 +1,55 @@
+{
+    "name": "kalimulhaq/json-query",
+    "description": "Build Laravel Query Using JSON Query String",
+    "keywords": [
+        "kalimulhaq",
+        "json-query"
+    ],
+    "homepage": "https://github.com/kalimulhaq/json-query",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Kalim ul Haq",
+            "email": "kalim.dir@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.2",
+        "illuminate/support": "^7.0",
+        "netresearch/jsonmapper": "^4.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^4.0",
+        "phpunit/phpunit": "^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kalimulhaq\\JsonQuery\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Kalimulhaq\\JsonQuery\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Kalimulhaq\\JsonQuery\\JsonQueryServiceProvider"
+            ],
+            "aliases": {
+                "JsonQuery": "Kalimulhaq\\JsonQuery\\JsonQueryFacade"
+            }
+        }
+    }
+}
