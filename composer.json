@@ -18,7 +18,7 @@
     "require": {
         "php": "^7.2",
         "illuminate/support": "^7.0",
-        "netresearch/jsonmapper": "^4.0"
+        "netresearch/jsonmapper": "^3.0"
     },
     "require-dev": {
         "orchestra/testbench": "^4.0",
