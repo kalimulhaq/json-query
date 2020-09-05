@@ -3,7 +3,7 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/kalimulhaq/json-query.svg?style=flat-square)](https://packagist.org/packages/kalimulhaq/json-query)
 [![Total Downloads](https://img.shields.io/packagist/dt/kalimulhaq/json-query.svg?style=flat-square)](https://packagist.org/packages/kalimulhaq/json-query)
 
-JsonQuery is a query language for your Laravel/Lumen API, which convery JSON query to Laravel Eloquent ORM query. 
+JsonQuery is a query language for your Laravel/Lumen API, which convert JSON query to Laravel Eloquent ORM query. 
 
 ## Installation
 
@@ -34,7 +34,7 @@ class UsersController extends Controller {
 ```
 
 ### Filter
-`filter` is a valid JSON string of following form
+`filter` is a valid JSON string of the following form
 
 ``` json
 {
@@ -125,10 +125,10 @@ class UsersController extends Controller {
 }
 ```
 ### Select
-`select` an array of columns from the base model, If removed `*` will be used
+`select` is an array of columns to select from the base model, If removed `*` will be used
 
 ### Where
-`where` valid json object 
+`where` is a valid json object used to construct the `WHERE` clause 
 ``` json
 {
   "and": [],
@@ -139,12 +139,12 @@ class UsersController extends Controller {
   "sub_operator": ""
 }
 ```
-#### and (optional)
+#### and
 to combine the where clause with `AND` 
-#### or (optional)
+#### or
 to combine the where clause with `OR` 
 
-Both `and` and `or` are arrays of objects, each object is represent one `where` clause 
+Both `and` and `or` are arrays of objects, each object is representing one `where` clause 
 
 ``` json
 {
@@ -154,9 +154,9 @@ Both `and` and `or` are arrays of objects, each object is represent one `where` 
   "sub_operator": ""
 }
 ```
-If `operator` removed `=` will be used default operator 
+If `operator` removed `=` will be used as a default operator 
 
-The (optional) outside `field, value, operator, sub_operator` make a singal where close wich will be combined with `AND` with the `and` and `or` groups.
+The (optional) outside `field, value, operator, sub_operator` make a singal where clause which will be combined with `AND` with the `and` and `or` groups.
 
 
 #### field
@@ -173,7 +173,7 @@ sub operator is only required if `operator` is `has` or `not_has`, and supported
 
 
 ## Order 
-Order used to order the result. `order` is An array of objects 
+Order is used to order the rows. `order` is An array of objects 
 ``` json
 [
     {
@@ -184,7 +184,7 @@ Order used to order the result. `order` is An array of objects
 ```
 
 ## Include
-In order to includes related models. `include` is an array of objects with same structure of the root `filter` object with extra property `relation`. 
+In order to includes related models. `include` is an array of objects with same structure of the root `filter` (see above) object with extra property `relation`. 
 ``` json
 {
   "relation":"",
