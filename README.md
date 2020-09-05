@@ -210,18 +210,9 @@ In order to includes related models count. `include_count` is an array of object
 
 Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
 
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-### Security
-
-If you discover any security related issues, please email kalim.dir@gmail.com instead of using the issue tracker.
-
 ## Credits
 
 - [Kalim ul Haq](https://github.com/kalimulhaq)
-- [All Contributors](../../contributors)
 
 ## License
 
