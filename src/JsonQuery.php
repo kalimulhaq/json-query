@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Builder;
 
-class JsonQuery{
-	
+class JsonQuery {
+
     private $model;
     private $query;
     private $jsonRaw;
@@ -151,8 +151,7 @@ class JsonQuery{
                 'total' => $paginator->total(),
                 'has_more_pages' => $paginator->hasMorePages(),
                 'is_first_page' => $paginator->onFirstPage(),
-                'query' => $this->query->toSql(),
-                'query_bindings' => $this->query->getBindings()
+                'query' => $this->getSql($this->query),
             );
         } else {
             $this->result = $this->query->get();
@@ -166,8 +165,7 @@ class JsonQuery{
                 'total' => $count,
                 'has_more_pages' => false,
                 'is_first_page' => true,
-                'query' => $this->query->toSql(),
-                'query_bindings' => $this->query->getBindings()
+                'query' => $this->getSql($this->query),
             );
         }
 
@@ -175,14 +173,14 @@ class JsonQuery{
     }
 
     private function _buildSelect(&$query, $select) {
+        $model = $query->getModel();
+        $table = $model->getTable();
+
         if (empty($select)) {
             $select = array('*');
         } else {
-            $model = $query->getModel();
-            $table = $model->getTable();
-
             if (!in_array('id', $select)) {
-                array_unshift($select, "$table.id");
+                array_unshift($select, "id");
             }
 
             if (!empty($model->forcedSelect)) {
@@ -191,7 +189,12 @@ class JsonQuery{
                 $select = array_merge($select, $model::$forcedSelect);
             }
         }
-        $query->select(array_unique($select));
+
+        $_select = array_map(function($e) use ($table) {
+            return "$table.$e";
+        }, array_unique($select));
+        
+        $query->select($_select);
 
         return $query;
     }
@@ -511,4 +514,14 @@ class JsonQuery{
         }
         return $arr;
     }
+
+    private function getSql($query) {
+        $sql = $query->toSql();
+        foreach ($query->getBindings() as $binding) {
+            $value = is_numeric($binding) ? $binding : "'" . $binding . "'";
+            $sql = preg_replace('/\?/', $value, $sql, 1);
+        }
+        return $sql;
+    }
+
 }
