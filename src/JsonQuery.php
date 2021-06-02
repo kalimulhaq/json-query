@@ -193,7 +193,7 @@ class JsonQuery {
         $_select = array_map(function($e) use ($table) {
             return "$table.$e";
         }, array_unique($select));
-        
+
         $query->select($_select);
 
         return $query;
