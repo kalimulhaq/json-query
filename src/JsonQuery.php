@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Builder;
 
-class JsonQuery {
+class JsonQuery
+{
 
     private $model;
     private $query;
@@ -18,13 +19,19 @@ class JsonQuery {
     private $result;
     private $meta;
 
-    public function __construct($instance = null, string $json_str = null) {
+    public function __construct($instance = null, string $json_str = null)
+    {
         if ($instance && $json_str) {
             $this->init($instance, $json_str);
         }
     }
 
-    public function init($instance, $json_str) {
+    public function init($instance, $json_str)
+    {
+        if (is_array($json_str) || is_object($json_str)) {
+            $json_str = json_encode($json_str);
+        }
+
         if ($instance instanceof Model) {
             $this->model = $instance;
             $this->query = $this->model->query();
@@ -53,31 +60,38 @@ class JsonQuery {
         return $this;
     }
 
-    public function model() {
+    public function model()
+    {
         return $this->model;
     }
 
-    public function query() {
+    public function query()
+    {
         return $this->query;
     }
 
-    public function jsonRaw() {
+    public function jsonRaw()
+    {
         return $this->jsonRaw;
     }
 
-    public function json() {
+    public function json()
+    {
         return $this->json;
     }
 
-    public function result() {
+    public function result()
+    {
         return $this->result;
     }
 
-    public function meta() {
+    public function meta()
+    {
         return $this->meta;
     }
 
-    public function buildQuery() {
+    public function buildQuery()
+    {
         $this->buildSelect();
         $this->buildWhere();
         $this->buildOrder();
@@ -87,43 +101,50 @@ class JsonQuery {
         return $this;
     }
 
-    public function buildSelect() {
+    public function buildSelect()
+    {
         $selectMap = $this->json->select;
         $this->_buildSelect($this->query, $selectMap);
         return $this;
     }
 
-    public function buildWhere() {
+    public function buildWhere()
+    {
         $whereMap = $this->json->where;
         $this->_buildWhere($this->query, $whereMap);
         return $this;
     }
 
-    public function buildOrder() {
+    public function buildOrder()
+    {
         $orderMap = $this->json->order;
         $this->_buildOrder($this->query, $orderMap);
         return $this;
     }
 
-    public function buildInclude() {
+    public function buildInclude()
+    {
         $includeMap = $this->json->include;
         $this->_buildInclude($this->query, $includeMap);
         return $this;
     }
 
-    public function buildIncludeCount() {
+    public function buildIncludeCount()
+    {
         $includeCountMap = $this->json->include_count;
         $this->_buildIncludeCount($this->query, $includeCountMap);
         return $this;
     }
 
-    public function buildScopes() {
+    public function buildScopes()
+    {
         $scopesMap = $this->json->scopes;
         $this->_buildScopes($this->query, $scopesMap);
         return $this;
     }
 
-    public function addScopes($scopes) {
+    public function addScopes($scopes)
+    {
         $_scopes = is_array($scopes) ? $scopes : func_get_args();
         foreach ($_scopes as $scope) {
             $this->query->$scope();
@@ -132,7 +153,8 @@ class JsonQuery {
         return $this;
     }
 
-    public function buildResult($limit = 0, $page = 1, $query = null) {
+    public function buildResult($limit = 0, $page = 1, $query = null)
+    {
         if ($query instanceof Builder) {
             $this->model = $query->getModel();
             $this->query = $query;
@@ -172,7 +194,8 @@ class JsonQuery {
         return $this;
     }
 
-    private function _buildSelect(&$query, $select) {
+    private function _buildSelect(&$query, $select, $useAlias = true)
+    {
         $model = $query->getModel();
         $table = $model->getTable();
 
@@ -190,16 +213,21 @@ class JsonQuery {
             }
         }
 
-        $_select = array_map(function($e) use ($table) {
-            return "$table.$e";
-        }, array_unique($select));
+        if ($useAlias) {
+            $_select = array_map(function ($e) use ($table) {
+                return "$table.$e";
+            }, array_unique($select));
+        } else {
+            $_select =  array_unique($select);
+        }
 
         $query->select($_select);
 
         return $query;
     }
 
-    private function _buildWhere(&$query, $where) {
+    private function _buildWhere(&$query, $where)
+    {
 
         if (!empty($where->field)) {
             $operator = isset($where->operator) ? $where->operator : '=';
@@ -233,7 +261,8 @@ class JsonQuery {
         return $query;
     }
 
-    private function _buildOrder(&$query, $order) {
+    private function _buildOrder(&$query, $order)
+    {
         if (!empty($order)) {
             foreach ($order as $val) {
                 $dir = in_array(strtolower($val->order), array('asc', 'desc')) ? $val->order : 'asc';
@@ -243,13 +272,14 @@ class JsonQuery {
         return $query;
     }
 
-    private function _buildInclude(&$query, $include) {
+    private function _buildInclude(&$query, $include)
+    {
 
         if (!empty($include)) {
             $includes = array();
             foreach ($include as $val) {
                 $includes[$val->relation] = function ($query) use ($val) {
-                    $this->_buildSelect($query, $val->select);
+                    $this->_buildSelect($query, $val->select, false);
                     $this->_buildWhere($query, $val->where);
                     $this->_buildOrder($query, $val->order);
                     $this->_buildInclude($query, $val->include);
@@ -262,7 +292,8 @@ class JsonQuery {
         return $query;
     }
 
-    private function _buildIncludeCount(&$query, $include) {
+    private function _buildIncludeCount(&$query, $include)
+    {
 
         if (!empty($include)) {
             $includes = array();
@@ -278,7 +309,8 @@ class JsonQuery {
         return $query;
     }
 
-    private function _buildScopes(&$query, $scopes) {
+    private function _buildScopes(&$query, $scopes)
+    {
         $_scopes = !empty($scopes) && is_array($scopes) ? $scopes : [];
         foreach ($_scopes as $scope => $arguments) {
             $args = [];
@@ -297,7 +329,8 @@ class JsonQuery {
         return $query;
     }
 
-    private function _buildWhereAnd(&$query, array $group) {
+    private function _buildWhereAnd(&$query, array $group)
+    {
         foreach ($group as $condition) {
             $operator = isset($condition->operator) ? $condition->operator : '=';
             $sub_operator = isset($condition->sub_operator) ? $condition->sub_operator : null;
@@ -319,7 +352,8 @@ class JsonQuery {
         return $query;
     }
 
-    private function _buildWhereOr(&$query, array $group) {
+    private function _buildWhereOr(&$query, array $group)
+    {
         $firstOr = array_shift($group);
         $operator = isset($firstOr->operator) ? $firstOr->operator : '=';
         $sub_operator = isset($firstOr->sub_operator) ? $firstOr->sub_operator : null;
@@ -346,7 +380,8 @@ class JsonQuery {
         return $query;
     }
 
-    private function _buildWhereCondition(&$query, $field, $value = null, $op = '=', $sub_op = '=') {
+    private function _buildWhereCondition(&$query, $field, $value = null, $op = '=', $sub_op = '=')
+    {
 
         $operator = !empty($op) ? strtolower($op) : '=';
         $sub_operator = !empty($sub_op) ? strtolower($sub_op) : '=';
@@ -389,16 +424,16 @@ class JsonQuery {
             }
         } else if ($operator === 'where_has') {
             if ($query->getModel()->$field() instanceof MorphTo) {
-                $query->whereHasMorph($field, ['*'], function($query) use ($value) {
+                $query->whereHasMorph($field, ['*'], function ($query) use ($value) {
                     $this->_buildWhere($query, $value);
                 });
             } else {
-                $query->whereHas($field, function($query) use ($value) {
+                $query->whereHas($field, function ($query) use ($value) {
                     $this->_buildWhere($query, $value);
                 });
             }
         } else if ($operator === 'where_not_has') {
-            $query->whereDoesntHave($field, function($query) use ($value) {
+            $query->whereDoesntHave($field, function ($query) use ($value) {
                 $this->_buildWhere($query, $value);
             });
         } else {
@@ -408,7 +443,8 @@ class JsonQuery {
         return $query;
     }
 
-    private function _buildOrWhereCondition(&$query, $field, $value = null, $op = '=', $sub_op = '=') {
+    private function _buildOrWhereCondition(&$query, $field, $value = null, $op = '=', $sub_op = '=')
+    {
 
         $operator = !empty($op) ? strtolower($op) : '=';
         $sub_operator = !empty($sub_op) ? strtolower($sub_op) : '=';
@@ -451,21 +487,21 @@ class JsonQuery {
             }
         } else if ($operator === 'where_has') {
             if ($query->getModel()->$field() instanceof MorphTo) {
-                $query->orWhereHasMorph($field, ['*'], function($query) use ($value) {
+                $query->orWhereHasMorph($field, ['*'], function ($query) use ($value) {
                     $this->_buildWhere($query, $value);
                 });
             } else {
-                $query->orWhereHas($field, function($query) use ($value) {
+                $query->orWhereHas($field, function ($query) use ($value) {
                     $this->_buildWhere($query, $value);
                 });
             }
         } else if ($operator === 'where_not_has') {
             if ($query->getModel()->$field() instanceof MorphTo) {
-                $query->orWhereDoesntHaveMorph($field, ['*'], function($query) use ($value) {
+                $query->orWhereDoesntHaveMorph($field, ['*'], function ($query) use ($value) {
                     $this->_buildWhere($query, $value);
                 });
             } else {
-                $query->orWhereDoesntHave($field, function($query) use ($value) {
+                $query->orWhereDoesntHave($field, function ($query) use ($value) {
                     $this->_buildWhere($query, $value);
                 });
             }
@@ -476,7 +512,8 @@ class JsonQuery {
         return $query;
     }
 
-    private function _buildWildcardCondition($field, $value) {
+    private function _buildWildcardCondition($field, $value)
+    {
         $conditions = [];
         $pieces = explode(':', $field, 2);
         if (count($pieces) === 2) {
@@ -501,7 +538,8 @@ class JsonQuery {
         return $conditions;
     }
 
-    private function _value2Array($value) {
+    private function _value2Array($value)
+    {
         $arr = array();
         if (is_array($value)) {
             $arr = $value;
@@ -515,7 +553,8 @@ class JsonQuery {
         return $arr;
     }
 
-    private function getSql($query) {
+    private function getSql($query)
+    {
         $sql = $query->toSql();
         foreach ($query->getBindings() as $binding) {
             $value = is_numeric($binding) ? $binding : "'" . $binding . "'";
@@ -523,5 +562,4 @@ class JsonQuery {
         }
         return $sql;
     }
-
 }
