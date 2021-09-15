@@ -52,6 +52,10 @@ class JsonQuery
             if (json_last_error() !== JSON_ERROR_NONE) {
                 throw new RuntimeException('Invalid JSON String');
             }
+
+            if (is_array($this->jsonRaw)) {
+                $this->jsonRaw = (object) $this->jsonRaw;
+            }
         }
 
         $mapper = new JsonMapper();
