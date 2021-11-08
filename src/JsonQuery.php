@@ -361,7 +361,7 @@ class JsonQuery
         $firstOr = array_shift($group);
         $operator = isset($firstOr->operator) ? $firstOr->operator : '=';
         $sub_operator = isset($firstOr->sub_operator) ? $firstOr->sub_operator : null;
-        $this->_buildWhereCondition($query, $firstOr->field, $firstOr->value, $operator, $sub_operator);
+        $this->_buildOrWhereCondition($query, $firstOr->field, $firstOr->value, $operator, $sub_operator);
 
         foreach ($group as $condition) {
             $operator = isset($condition->operator) ? $condition->operator : '=';
@@ -369,13 +369,13 @@ class JsonQuery
             $this->_buildOrWhereCondition($query, $condition->field, $condition->value, $operator, $sub_operator);
 
             if (!empty($condition->and)) {
-                $query->where(function ($query) use ($condition) {
+                $query->orWhere(function ($query) use ($condition) {
                     $this->_buildWhereAnd($query, $condition->and);
                 });
             }
 
             if (!empty($condition->or)) {
-                $query->where(function ($query) use ($condition) {
+                $query->orWhere(function ($query) use ($condition) {
                     $this->_buildWhereOr($query, $condition->or);
                 });
             }
@@ -403,15 +403,15 @@ class JsonQuery
         } else if ($operator === 'not_null') {
             $query->whereNotNull($field);
         } else if ($operator === 'date') {
-            $query->whereDate($field, $value);
+            $query->whereDate($field, $sub_operator, $value);
         } else if ($operator === 'day') {
-            $query->whereDay($field, $value);
+            $query->whereDay($field, $sub_operator, $value);
         } else if ($operator === 'month') {
             $query->whereMonth($field, $value);
         } else if ($operator === 'year') {
-            $query->whereYear($field, $value);
+            $query->whereYear($field, $sub_operator, $value);
         } else if ($operator === 'time') {
-            $query->whereTime($field, $value);
+            $query->whereTime($field, $sub_operator, $value);
         } else if ($operator === 'like') {
             $query->where($field, 'like', "%$value%");
         } else if ($operator === 'has') {
@@ -466,15 +466,15 @@ class JsonQuery
         } else if ($operator === 'not_null') {
             $query->orWhereNotNull($field);
         } else if ($operator === 'date') {
-            $query->orWhereDate($field, $value);
+            $query->orWhereDate($field, $sub_operator, $value);
         } else if ($operator === 'day') {
-            $query->orWhereDay($field, $value);
+            $query->orWhereDay($field, $sub_operator, $value);
         } else if ($operator === 'month') {
-            $query->orWhereMonth($field, $value);
+            $query->orWhereMonth($field, $sub_operator, $value);
         } else if ($operator === 'year') {
-            $query->orWhereYear($field, $value);
+            $query->orWhereYear($field, $sub_operator, $value);
         } else if ($operator === 'time') {
-            $query->orWhereTime($field, $value);
+            $query->orWhereTime($field, $sub_operator, $value);
         } else if ($operator === 'like') {
             $query->orWhere($field, 'like', "%$value%");
         } else if ($operator === 'has') {
