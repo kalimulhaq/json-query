@@ -287,6 +287,7 @@ class JsonQuery
                     $this->_buildWhere($query, $val->where);
                     $this->_buildOrder($query, $val->order);
                     $this->_buildInclude($query, $val->include);
+                    $this->_buildIncludeCount($query, $val->include_count);
                     $this->_buildScopes($query, $val->scopes);
                 };
             }
