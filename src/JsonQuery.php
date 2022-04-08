@@ -538,6 +538,18 @@ class JsonQuery
                 $condition->operator = 'like';
                 $condition->value = $value;
                 $conditions[] = $condition;
+
+                $values = explode(',', $value);
+                if (count($values) > 1) {
+                    foreach ($values as $val) {
+                        $condition = new \stdClass();
+                        $condition->sub_operator = null;
+                        $condition->field = $key;
+                        $condition->operator = 'like';
+                        $condition->value = $val;
+                        $conditions[] = $condition;
+                    }
+                }
             }
         }
         return $conditions;

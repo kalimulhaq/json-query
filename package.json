@@ -1,0 +1,28 @@
+{
+    "name": "json-query",
+    "version": "1.0.6",
+    "description": "A JSON query language for your Laravel/Lumen API",
+    "main": "index.js",
+    "directories": {
+        "test": "tests"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/kalimulhaq/json-query.git"
+    },
+    "keywords": [
+        "Laravel",
+        "Lumen",
+        "Query",
+        "Builder"
+    ],
+    "author": "Kalim ul Haq",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/kalimulhaq/json-query/issues"
+    },
+    "homepage": "https://github.com/kalimulhaq/json-query#readme"
+}
